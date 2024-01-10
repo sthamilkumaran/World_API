@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using WorldAPI.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -9,6 +12,12 @@ builder.Services.AddCors(option =>
     option.AddPolicy("CustomPolicy", x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 });
 
+#endregion
+
+#region
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 #endregion
 
 builder.Services.AddControllers();
