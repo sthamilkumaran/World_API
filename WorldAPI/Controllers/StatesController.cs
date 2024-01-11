@@ -1,66 +1,66 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WorldAPI.Data;
 using WorldAPI.DTO.Country;
+using WorldAPI.DTO.States;
 using WorldAPI.Models;
+using WorldAPI.Repository;
 using WorldAPI.Repository.IRepository;
 
 namespace WorldAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CountryController : ControllerBase
+    public class StatesController : ControllerBase
     {
-        private readonly ICountryRepository _countryRepository;
+        private readonly IStatesRepository _statesRepository;
         private readonly IMapper _mapper;
 
-        public CountryController(ICountryRepository countryRepository, IMapper mapper)
+        public StatesController(IStatesRepository statesRepository, IMapper mapper)
         {
-            _countryRepository = countryRepository;
+            _statesRepository = statesRepository;
             _mapper = mapper;
-
         }
 
         [HttpGet]  //get all database datas
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult<IEnumerable<CountryDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<StatesDto>>> GetAll()
         {
-            var countries =await _countryRepository.GetAll();
+            var states = await _statesRepository.GetAll();
 
 
-            var countriesDto = _mapper.Map<List<CountryDto>>(countries);
-            if (countries == null)
+            var statesDto = _mapper.Map<List<StatesDto>>(states);
+            if (states == null)
             {
                 return NoContent();
             }
-            return Ok(countriesDto);
+            return Ok(statesDto);
         }
 
         [HttpGet("{id:int}")] //get singel data from database with Id
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult<CountryDto>> GetById(int id)
+        public async Task<ActionResult<StatesDto>> GetById(int id)
         {
-            var countries =await _countryRepository.Get(id);
+            var state = await _statesRepository.Get(id);
 
             
 
-            if (countries == null)
+            if (state == null)
             {
                 return NoContent();
             }
-            var countriesDto = _mapper.Map<CountryDto>(countries);
-            return Ok(countriesDto);
+            var stateDto = _mapper.Map<StatesDto>(state);
+            return Ok(stateDto);
         }
 
         [HttpPost] //post data from database
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<ActionResult<Country>> Create([FromBody] CreateCountryDto countryDto)
+        public async Task<ActionResult<States>> Create([FromBody] CreateStatesDto statesDto)
         {
-            var result = _countryRepository.IsRecordExsits(x => x.Name == countryDto.Name); // Name Check in database
+            var result = _statesRepository.IsRecordExsits(x => x.Name == statesDto.Name); // Name Check in database
 
 
             if (result)
@@ -68,20 +68,21 @@ namespace WorldAPI.Controllers
                 return Conflict("Country already exsitx in database");
             }
             //auto mapper function
-            var country = _mapper.Map<Country>(countryDto);
+            var state = _mapper.Map<States>(statesDto);
 
-            await _countryRepository.Create(country);
-            return CreatedAtAction("GetById", new { id = country.Id }, country);
+            await _statesRepository.Create(state);
+            return CreatedAtAction("GetById", new { id = state.Id }, state);
         }
+
 
         [HttpPut] //data base data update with id 
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Country>> Update(int id,[FromBody]UpdateCountryDto countryDto)
+        public async Task<ActionResult<States>> Update(int id, [FromBody] UpdateStatesDto stateDto)
         {
 
-            if (countryDto == null || id != countryDto.Id)
+            if (stateDto == null || id != stateDto.Id)
             {
                 return BadRequest();
             }
@@ -93,9 +94,9 @@ namespace WorldAPI.Controllers
             //    return NotFound();
             //}
 
-            var country = _mapper.Map<Country>(countryDto);
+            var state = _mapper.Map<States>(stateDto);
 
-            await _countryRepository.Update(country);
+            await _statesRepository.Update(state);
             return NoContent();
         }
 
@@ -110,14 +111,14 @@ namespace WorldAPI.Controllers
                 return BadRequest();
             }
 
-            var country = await _countryRepository.Get(id);
+            var state = await _statesRepository.Get(id);
 
-            if (country == null)
+            if (state == null)
             {
                 return NotFound();
             }
 
-            await _countryRepository.Delete(country);
+            await _statesRepository.Delete(state);
             return NoContent();
         }
     }
