@@ -85,10 +85,23 @@ namespace WorldAPI.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id:int}")] //database data delete with id
+        [HttpDelete("{id:int}")] //database data delete with id 
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public ActionResult DeleteById(int id)
         {
+            if (id == 0)
+            {
+                return BadRequest();
+            }
+
             var country = _dbContext.Countries.Find(id);
+
+            if (country == null)
+            {
+                return NotFound();
+            }
+
             _dbContext.Countries.Remove(country);
             _dbContext.SaveChanges();
             return Ok();
