@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using WorldAPI.CommonMapping;
 using WorldAPI.Data;
+using WorldAPI.Repository;
+using WorldAPI.Repository.IRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 #region Configure AutoMapper
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+#endregion
+
+#region Configure Repository Pattern
+
+builder.Services.AddTransient<ICountryRepository,CountryRepository>();
 
 #endregion
 
